@@ -38,3 +38,18 @@ function operate(operator, a, b) {
             return "Error: Unknown operator";
     }
 }
+
+const display = document.getElementById('display');
+let displayValue = '';
+
+const digitButtons = document.querySelectorAll('.buttons button');
+digitButtons.forEach((button) => {
+  const value = button.textContent;
+
+  if (!isNaN(value)) {
+    button.addEventListener('click', () => {
+      displayValue += value;
+      display.textContent = displayValue;
+    });
+  }
+});
