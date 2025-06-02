@@ -17,10 +17,6 @@ function divide(a, b) {
     return a / b;
 }
 
-let firstNumber = null;
-let operator = null;
-let secondNumber = null;
-
 function operate(operator, a, b) {
     a = Number(a);
     b = Number(b);
@@ -41,15 +37,69 @@ function operate(operator, a, b) {
 
 const display = document.getElementById('display');
 let displayValue = '';
+let firstNumber = null;
+let operator = null;
+let secondNumber = null;
+let shouldResetDisplay = false;
 
-const digitButtons = document.querySelectorAll('.buttons button');
-digitButtons.forEach((button) => {
-  const value = button.textContent;
+function updateDisplay(value) {
+    display.textContent = value;
+}
 
-  if (!isNaN(value)) {
-    button.addEventListener('click', () => {
-      displayValue += value;
-      display.textContent = displayValue;
-    });
-  }
+function clear() {
+    displayValue = '';
+    firstNumber = null;
+    operator = null;
+    secondNumber = null;
+    shouldResetDisplay = false;
+    updateDisplay('0');
+}
+
+function inputDigit(digit) {
+    if (shouldResetDisplay) {
+        displayValue = '';
+        shouldResetDisplay = false;
+    }
+
+    displayValue += digit;
+    updateDisplay(displayValue);
+}
+
+function setOperator(op) {
+    if (operator !== null && !shouldResetDisplay) {
+        secondNumber = displayValue;
+        const result = operate(operator, firstNumber, secondNumber);
+        updateDisplay(result);
+        firstNumber = result;
+    } else {
+        firstNumber = display.textContent;
+    }
+
+    operator = op;
+    shouldResetDisplay = true;
+}
+
+function calculate() {
+    if (firstNumber === null || operator === null || displayValue === '') return;
+
+    secondNumber = displayValue;
+    const result = operate(operator, firstNumber, secondNumber);
+    updateDisplay(result);
+    firstNumber = result;
+    operator = null;
+    shouldResetDisplay = true;
+}
+
+document.querySelectorAll('.buttons button').forEach(button => {
+    const value = button.textContent;
+
+    if (!isNaN(value)) {
+        button.addEventListener('click', () => inputDigit(value));
+    } else if (value === 'C') {
+        button.addEventListener('click', clear);
+    } else if (value === '=') {
+        button.addEventListener('click', calculate);
+    } else {
+        button.addEventListener('click', () => setOperator(value));
+    }
 });
