@@ -12,7 +12,7 @@ function multiply(a, b) {
 
 function divide(a, b) {
     if (b === 0) {
-        return "Error: Can't divide by 0!";
+        return "Nice try";
     }
     return a / b;
 }
@@ -20,19 +20,27 @@ function divide(a, b) {
 function operate(operator, a, b) {
     a = Number(a);
     b = Number(b);
+    let result;
 
     switch (operator) {
         case '+':
-            return add(a, b);
+            result = add(a, b);
+            break;
         case '-':
-            return subtract(a, b);
+            result = subtract(a, b);
+            break;
         case '*':
-            return multiply(a, b);
+            result = multiply(a, b);
+            break;
         case '/':
-            return divide(a, b);
+            result = divide(a, b);
+            if (typeof result === "string") return result;
+            break;
         default:
-            return "Error: Unknown operator";
+            return null;
     }
+
+    return Math.round(result * 1e6) / 1e6;
 }
 
 const display = document.getElementById('display');
@@ -66,7 +74,12 @@ function inputDigit(digit) {
 }
 
 function setOperator(op) {
-    if (operator !== null && !shouldResetDisplay) {
+    if (operator !== null && shouldResetDisplay) {
+        operator = op;
+        return;
+    }
+
+    if (operator !== null) {
         secondNumber = displayValue;
         const result = operate(operator, firstNumber, secondNumber);
         updateDisplay(result);
@@ -103,3 +116,5 @@ document.querySelectorAll('.buttons button').forEach(button => {
         button.addEventListener('click', () => setOperator(value));
     }
 });
+
+updateDisplay('0');
